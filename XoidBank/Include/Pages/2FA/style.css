@@ -1,0 +1,394 @@
+:root {
+    --black: #070808;
+    --surface: #0d0f10;
+    --surface-light: #111415;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-focus: rgba(255, 255, 255, 0.22);
+    --text: #f4f5f5;
+    --muted: #85898a;
+    --muted-light: #a8acad;
+    --error: #ff5c5c;
+    --radius: 14px;
+}
+
+
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    min-height: 100vh;
+    background: radial-gradient( circle at 50% 0%, #151819 0%, var(--black) 42% );
+    color: var(--text);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+/* =========================================
+   PAGE
+========================================= */
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+
+/* =========================================
+   CARD
+========================================= */
+
+.twofa-card {
+    width: 100%;
+    max-width: 470px;
+    padding: 42px;
+    background: linear-gradient( 180deg, rgba(18, 20, 21, 0.96), rgba(10, 12, 13, 0.98) );
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+
+
+/* =========================================
+   BRAND
+========================================= */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 38px;
+}
+
+
+.brand-mark {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    background: #111314;
+}
+
+
+.brand-name {
+    font-size: 15px;
+    font-weight: 650;
+    letter-spacing: -0.2px;
+}
+
+
+.brand-subtitle {
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+
+/* =========================================
+   HEADING
+========================================= */
+
+.heading {
+    margin-bottom: 30px;
+}
+
+
+.eyebrow {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+}
+
+
+.heading h1 {
+    font-size: 29px;
+    line-height: 1.15;
+    letter-spacing: -0.8px;
+}
+
+
+.heading p {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+.heading strong {
+    color: var(--muted-light);
+    font-weight: 600;
+}
+
+
+/* =========================================
+   CODE LABEL
+========================================= */
+
+.code-label {
+    margin-bottom: 10px;
+    color: var(--muted-light);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   CODE INPUTS
+========================================= */
+
+.code-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+
+    .code-inputs input {
+        width: 64px;
+        height: 64px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        outline: none;
+        background: var(--surface);
+        color: var(--text);
+        text-align: center;
+        font-size: 24px;
+        font-weight: 600;
+        transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+    }
+
+
+        .code-inputs input:focus {
+            border-color: var(--border-focus);
+            background: var(--surface-light);
+            transform: translateY(-1px);
+        }
+
+
+        .code-inputs input.error {
+            border-color: rgba(255, 92, 92, 0.55);
+        }
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+.error-message {
+    display: block;
+    min-height: 15px;
+    margin-top: 7px;
+    color: var(--error);
+    font-size: 10px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+
+/* =========================================
+   TIMER
+========================================= */
+
+.timer-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 18px;
+    color: #626768;
+    font-size: 11px;
+}
+
+
+#timer {
+    color: #d7d9d9;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+
+    #timer.expired {
+        color: var(--error);
+    }
+
+
+/* =========================================
+   VERIFY BUTTON
+========================================= */
+
+.verify-button {
+    position: relative;
+    width: 100%;
+    height: 49px;
+    margin-top: 23px;
+    border: 0;
+    border-radius: var(--radius);
+    background: #f2f3f3;
+    color: #080909;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+
+    .verify-button:hover {
+        opacity: 0.92;
+    }
+
+
+    .verify-button:active {
+        transform: scale(0.99);
+    }
+
+
+    .verify-button:disabled {
+        cursor: default;
+        opacity: 0.6;
+    }
+
+
+/* =========================================
+   LOADER
+========================================= */
+
+.button-loader {
+    display: none;
+    width: 15px;
+    height: 15px;
+    margin: auto;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-top-color: #000000;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+
+.verify-button.loading .button-text {
+    display: none;
+}
+
+
+.verify-button.loading .button-loader {
+    display: block;
+}
+
+
+@keyframes spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 27px;
+    color: #626768;
+    font-size: 11px;
+}
+
+
+    .footer button {
+        border: 0;
+        background: transparent;
+        color: #d7d9d9;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+
+        .footer button:hover {
+            color: #ffffff;
+        }
+
+
+/* =========================================
+   TOAST
+========================================= */
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translate(-50%, 20px);
+    padding: 12px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #111314;
+    color: #e9eaea;
+    font-size: 11px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+
+    .toast.active {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 520px) {
+
+    .page {
+        padding: 20px 14px;
+    }
+
+
+    .twofa-card {
+        padding: 30px 22px;
+        border-radius: 17px;
+    }
+
+
+    .heading h1 {
+        font-size: 26px;
+    }
+
+
+    .code-inputs {
+        gap: 8px;
+    }
+
+
+        .code-inputs input {
+            width: 58px;
+            height: 58px;
+        }
+}
