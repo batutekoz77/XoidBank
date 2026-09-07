@@ -1,142 +1,152 @@
-# XoidBank
+# 🏦 XoidBank
 
-XoidBank is a secure banking web application built from scratch in C++, featuring authentication, session management, two-factor verification, and Dutch banking compliance (BSN validation).
+XoidBank is a secure banking web application built from scratch in C++. It handles authentication, mandatory two-factor verification, tiered session management, and Dutch banking compliance (BSN validation) — all served through a self-contained C++ backend with a per-page HTML/CSS/JS frontend.
 
-> ⚠️ **Status:** Active development. Backend authentication flow is functional; banking features (accounts, transactions, dashboard) are in progress.
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Backend | C++ (Visual Studio 2026) |
-| Web framework | [Crow](https://github.com/CrowCpp/Crow) |
-| Async I/O | Asio (standalone) |
-| Database | SQLite via [sqlite_modern_cpp](https://github.com/SqliteModernCpp/sqlite_modern_cpp) |
-| Password hashing | [libsodium](https://libsodium.gitbook.io/doc/) (Argon2id) |
-| Email delivery | libcurl (SMTP over Gmail) |
-| Package management | vcpkg (manifest mode) |
-| Frontend | Vanilla HTML / CSS / JS (per-page, served by the backend) |
+> ⚠️ **Status:** Active development. Authentication, registration, and 2FA are fully functional. Banking features (dashboard, accounts, transactions) are in progress.
 
 ---
 
-## Features
+## 🛠 Features
 
-### ✅ Implemented
-
-- **Project architecture**
-  - Modular page routing — every page under `Include/Pages/<PageName>/` is auto-discovered and served without manual route registration
-  - Each feature owns its own router (`Application/<Feature>/<Feature>.hpp/.cpp`) to keep `Application.cpp` thin
-  - Centralized `Crow.hpp` wrapper to manage the Crow/Asio/middleware include chain safely
-
-- **User accounts**
-  - Registration with full validation: name, email format, password confirmation, phone number, and **Dutch BSN (Burgerservicenummer)** validated with the official 11-proef algorithm
-  - Unique constraints enforced at the database level for email, phone number, and BSN, each with a distinct, user-facing conflict message
-  - Passwords hashed with Argon2id (libsodium) — never stored or logged in plaintext
-
-- **Authentication flow**
-  - Login → mandatory two-factor verification → authenticated session (2FA can never be skipped, even with "remember me" enabled)
-  - 4-digit verification codes sent by email (Gmail SMTP via libcurl), valid for 120 seconds, with a maximum of 5 attempts
-  - Three-tier cookie system:
-    - `pending_session_id` — issued after a correct password, only grants access to the 2FA page
-    - `session_id` — issued after successful 2FA, grants access to authenticated pages
-    - `remember_token` — long-lived token that skips the password step on return visits, but **still routes through 2FA every time**
-  - All cookies are `HttpOnly` + `SameSite=Strict`
-
-- **Route protection**
-  - Public pages (`Login`, `Register`) are always accessible
-  - All other pages require a valid session and redirect to `/Login` automatically if missing
-  - `/2FA` requires a valid pending session and redirects otherwise
-
-- **Rate limiting**
-  - Reusable `RateLimiter` skeleton (IP-based, thread-safe) supporting two patterns:
-    - **Attempt-based limiting with penalty cooldown** (e.g. 5 attempts / 5 minutes → 10-minute lockout on the 6th)
-    - **Simple cooldowns** for spam prevention on lightweight endpoints
-  - Applied to `/Login/Submit`, `/Register/Submit`, and `/2FA/Verify`
-  - Global flood protection middleware (e.g. 200 requests / 10 seconds per IP → 5-minute cooldown), applied to every route via Crow middleware
-
-### 🚧 Planned
-
-- Dashboard and account overview UI
-- Bank accounts (checking/savings), balances stored as integer minor units (no floating-point money)
-- Transactions (transfers, deposits, withdrawals) with status tracking
-- Audit logging (login attempts, transfers, password changes)
-- Account settings (password change, phone/email updates)
-- Admin/support role tooling
-- Config-driven deployment (moving hardcoded dev values into `Config.hpp`)
+- **No plaintext passwords, ever** — Argon2id hashing via libsodium
+- **Mandatory two-factor authentication** — even "remember me" cannot skip the 2FA step, only the password step
+- **Three-tier cookie/session system** — pending session → full session → remember token, each with its own scope and lifetime
+- **Dutch BSN validation** — real 11-proef checksum algorithm, not just a length check
+- **Unique-field conflict detection** — email, phone number, and BSN each report their own "already exists" error
+- **Auto-discovered page routing** — drop HTML/CSS/JS into `Include/Pages/<PageName>/` and it's served automatically, no manual route wiring
+- **Route guarding** — every page except Login/Register requires a valid session, unauthenticated visitors are redirected automatically
+- **Rate limiting on every sensitive endpoint** — attempt-based limits with penalty cooldowns on Login, Register, and 2FA Verify
+- **Global flood protection** — IP-based request-flood middleware applied to the entire app, independent of per-route limits
+- **Email delivery for verification codes** — SMTP over Gmail via libcurl
 
 ---
 
-## Project Structure
+## 🚀 Tech Stack
+
+- **Language:** C++ (Visual Studio 2026)
+- **Web framework:** [Crow](https://github.com/CrowCpp/Crow)
+- **Async I/O:** Asio (standalone)
+- **Database:** SQLite via [sqlite_modern_cpp](https://github.com/SqliteModernCpp/sqlite_modern_cpp)
+- **Password hashing:** [libsodium](https://libsodium.gitbook.io/doc/) (Argon2id)
+- **Email delivery:** libcurl (SMTP)
+- **Package management:** vcpkg (manifest mode)
+- **Target:** `x64/Release`
+
+---
+
+## 🎮 Roadmap
+
+- [x] Auto-discovered static page routing (`Include/Pages/<PageName>/`)
+- [x] Per-feature router architecture (`Application/<Feature>/`)
+- [x] User registration with full validation (name, email, password, phone, BSN)
+- [x] Dutch BSN validation (11-proef algorithm)
+- [x] Unique constraint handling (email / phone / BSN conflict messages)
+- [x] Argon2id password hashing
+- [x] Login flow
+- [x] Mandatory two-factor authentication (email-delivered codes)
+- [x] Tiered session system (pending session / full session / remember token)
+- [x] Route guards (redirect unauthenticated users to `/Login`)
+- [x] Per-endpoint rate limiting with cooldown penalties
+- [x] Global IP-based flood protection middleware
+- [ ] Dashboard UI
+- [ ] Bank accounts (checking / savings) with integer-based balances
+- [ ] Transactions (transfers, deposits, withdrawals)
+- [ ] Audit logging (login attempts, transfers, password changes)
+- [ ] Account settings (password change, phone/email updates)
+- [ ] Admin/support role tooling
+- [ ] Production config separation (SMTP credentials, DB path, ports)
+
+---
+
+## 📁 Project Structure
 
 ```
 XoidBank/
 ├── Application/
-│   ├── Login/          # Login.hpp/.cpp — credential check, pending session creation
-│   ├── Register/        # Register.hpp/.cpp — account creation, validation
-│   ├── TwoFactor/       # TwoFactor.hpp/.cpp — code verification, session issuance
+│   ├── Login/            # Login.hpp/.cpp — credential check, pending session creation
+│   ├── Register/         # Register.hpp/.cpp — account creation, validation
+│   ├── TwoFactor/        # TwoFactor.hpp/.cpp — code verification, session issuance
 │   └── Application.hpp/.cpp  # Route registration, static page discovery, guards
 ├── Database/
-│   └── Users.hpp/.cpp   # Users table, password hashing, uniqueness checks
+│   └── Users.hpp/.cpp    # Users table, password hashing, uniqueness checks
 ├── Session/
-│   └── Session.hpp/.cpp # Sessions, pending sessions, remember tokens
+│   └── Session.hpp/.cpp  # Sessions, pending sessions, remember tokens
 ├── Include/
-│   ├── Crow.hpp          # Central Crow/Asio/middleware include point
-│   ├── CookieUtils.hpp   # Cookie parsing helper
-│   ├── RateLimit/        # RateLimiter + GlobalRateLimitMiddleware
-│   ├── Mailer/           # SMTP verification code delivery
-│   └── Pages/<PageName>/ # Static HTML/CSS/JS per page
+│   ├── Crow.hpp           # Central Crow/Asio/middleware include point
+│   ├── CookieUtils.hpp    # Cookie parsing helper
+│   ├── RateLimit/         # RateLimiter + GlobalRateLimitMiddleware
+│   ├── Mailer/            # SMTP verification code delivery
+│   └── Pages/<PageName>/  # Static HTML/CSS/JS per page
 └── Main/
-    ├── Main.cpp          # Entry point
-    └── Config.hpp        # Environment-specific configuration (not tracked in detail here)
+    ├── Main.cpp           # Entry point
+    └── Config.hpp         # Local configuration (host, port, DB path, SMTP credentials)
 ```
 
 ---
 
 ## Getting Started
 
-### Prerequisites
+### 1. Install Git
 
-- Visual Studio 2026 with the C++ workload
-- [vcpkg](https://github.com/microsoft/vcpkg) installed and integrated (`vcpkg integrate install`)
-- A Gmail account with an [App Password](https://support.google.com/accounts/answer/185833) for sending 2FA codes
+Download and install Git:
+<https://git-scm.com/downloads>
 
-### Dependencies (vcpkg manifest)
+### 2. Setup VCPKG & Dependencies
 
-```json
-{
-  "dependencies": [
-    "crow",
-    "asio",
-    "sqlite-modern-cpp",
-    "libsodium",
-    "curl"
-  ]
-}
+Open **CMD** and run:
+
+```
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+.\bootstrap-vcpkg.bat
+.\vcpkg install crow:x64-windows
+.\vcpkg install asio:x64-windows
+.\vcpkg install sqlite-modern-cpp:x64-windows
+.\vcpkg install libsodium:x64-windows
+.\vcpkg install curl:x64-windows
+.\vcpkg integrate install
 ```
 
-Visual Studio will restore these automatically on build once manifest mode is enabled for the project.
+Or, if the project uses manifest mode, just build once in Visual Studio and it will restore everything from `vcpkg.json` automatically.
 
-### Configuration
+### 3. Configure in Visual Studio
 
-`Main/Config.hpp` holds environment-specific values (host, port, database path, SMTP credentials) and is intentionally excluded from shared logic — set it up locally before running.
-
-### Running
-
-Build and run from Visual Studio. On first launch, the SQLite database is created automatically next to the executable.
+- Go to **Project → Properties**
+- Select **Configuration Properties → vcpkg**
+- Set **Use Vcpkg Manifest** to **Yes**
 
 ---
 
-## Security Notes
+## ▶️ Running the Project
 
-- Two-factor authentication cannot be bypassed, even with "remember me" — only the password step is skipped
-- Money values will be stored as integers (minor currency units), never floats, once the accounts/transactions layer is implemented
-- Sensitive input (passwords, verification codes) is never logged
-- All authentication cookies are `HttpOnly` and `SameSite=Strict`
+1. Open the project in **Visual Studio 2026**
+2. Fill in `Main/Config.hpp` (database path, SMTP credentials for 2FA emails)
+3. Make sure the configuration is set to **`x64` / `Release`**
+4. Run with **F5** (Local Windows Debugger) — **do not** run the compiled `.exe` directly by double-clicking, it depends on the debugger's working directory to locate the `Include/Pages` folder correctly
+5. Once running, open your browser at:
+
+```
+http://127.0.0.1:8080
+```
+
+> ⚠️ **Note:** Always start the server with **F5**, not by launching `XoidBank.exe` from `x64/Release` manually. The debugger sets the correct working directory for static file resolution.
+
+---
+
+## 🔐 Security Notes
+
+- Two-factor authentication cannot be bypassed — "remember me" only skips the password step, never the verification code
+- All authentication cookies (`session_id`, `pending_session_id`, `remember_token`) are `HttpOnly` and `SameSite=Strict`
+- Verification codes expire after 120 seconds and are limited to 5 attempts per login
+- Passwords are never logged or stored in plaintext
+- Money values will be stored as integers (minor currency units) once the accounts/transactions layer is implemented — no floating-point balances
 
 ---
 
 ## License
 
 TBD.
+
+## Contributing
+
+Pull requests are welcome! Feel free to open issues for bugs, feature requests, or ideas.
