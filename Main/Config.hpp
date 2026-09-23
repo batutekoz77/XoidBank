@@ -12,8 +12,8 @@ namespace {
 }
 
 namespace Config {
-    inline const bool TestMode = true;
-    inline const std::string Bypass2FA = "7777";
+    inline const bool TestMode = false;
+    inline const std::string Bypass2FA = "";
 
 	inline const std::string Host = "127.0.0.1";
 	inline const int Port = 8080;
