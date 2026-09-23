@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard — XoidBank</title>
+
+    <link rel="stylesheet" href="/Dashboard/style.css">
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <!-- ==================== HEADER ==================== -->
+
+        <header class="top-bar">
+
+            <div class="brand">
+                <div class="brand-mark">X</div>
+
+                <div class="brand-text">
+                    <span class="brand-name">XoidBank</span>
+                    <span class="brand-subtitle">Secure banking</span>
+                </div>
+            </div>
+			
+			<div class="header-actions"> <button class="profile-button" id="profileButton"> <span class="profile-avatar" id="profileAvatar"> B </span> <span class="profile-info"> <span class="profile-name" id="profileName"> User </span> <span class="profile-label"> Personal </span> </span> <span class="icon icon-chevron"></span> </button> </div>
+			
+        </header>
+
+
+        <!-- ==================== ACCOUNT HERO ==================== -->
+
+        <section class="account-hero">
+
+            <div class="status-indicator"></div>
+
+            <span class="account-label">Main Account</span>
+
+            <div class="balance" id="balance">
+                € 0.00
+            </div>
+
+            <div class="iban" id="iban">
+                •••• •••• •••• ••••
+            </div>
+
+        </section>
+
+
+        <!-- ==================== QUICK ACTIONS ==================== -->
+
+        <section class="quick-actions">
+
+            <button class="quick-action" id="transferButton">
+
+                <div class="quick-icon">
+                    <span class="icon icon-transfer"></span>
+                </div>
+
+                <span>Transfer</span>
+
+            </button>
+
+
+            <button class="quick-action" id="paymentButton">
+
+                <div class="quick-icon">
+                    <span class="icon icon-payment"></span>
+                </div>
+
+                <span>Payment request</span>
+
+            </button>
+
+
+            <button class="quick-action" id="qrButton">
+
+                <div class="quick-icon">
+                    <span class="icon icon-qr"></span>
+                </div>
+
+                <span>Scan QR</span>
+
+            </button>
+
+        </section>
+
+
+        <!-- ==================== RECENT TRANSACTIONS ==================== -->
+
+        <section class="content">
+
+            <article class="dashboard-card transactions-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h2>Recent transactions</h2>
+
+                        <span class="card-subtitle">
+                            Your latest account activity
+                        </span>
+                    </div>
+
+                    <button class="view-all-button" id="viewAllButton">
+                        View all
+                    </button>
+
+                </div>
+
+
+                <div class="transactions" id="transactions">
+
+                    <div class="transaction-empty">
+                        Loading transactions...
+                    </div>
+
+                </div>
+
+            </article>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================== TOAST ==================== -->
+
+    <div class="toast" id="toast">
+        <span class="toast-icon"></span>
+        <span id="toastMessage"></span>
+    </div>
+
+
+    <script src="/Dashboard/script.js"></script>
+
+</body>
+</html>
